@@ -8,8 +8,22 @@ npx skills add truongduy2611/app-screenshots-cli-skills
 
 ## Available Skills
 
+### appshots-automation-pipeline
+End-to-end screenshot automation pipeline for iOS apps using asc CLI, simctl, and AXe.
+
+Use when:
+- You need to boot simulators and set locales programmatically.
+- You need to navigate apps and capture raw screenshots using accessibility identifiers.
+- You want to run parallel multi-locale screenshot captures.
+
+Example:
+```
+Capture 5 screens of my fitness app across 3 locales (en, ja, ko) using the iPhone 16 Pro Max simulator.
+```
+
+---
+
 ### appshots-cli-usage
-Core CLI reference — commands, flags, JSON output, port discovery.
 
 Use when:
 - You need the correct `appshots` command or flag combination
@@ -130,6 +144,12 @@ Each skill contains:
 - The **App Screenshots** desktop app must be running
 - The CLI auto-discovers the server port via `~/.config/app-screenshots/server.port`
 - Install the CLI: `dart pub global activate --source path packages/app_screenshots_cli`
+
+## Acknowledgements
+
+This project was inspired by and built upon ideas from the following excellent repositories:
+- [rudrankriyam/app-store-connect-cli-skills](https://github.com/rudrankriyam/app-store-connect-cli-skills)
+- [ParthJadhav/app-store-screenshots](https://github.com/ParthJadhav/app-store-screenshots)
 
 ## License
 
