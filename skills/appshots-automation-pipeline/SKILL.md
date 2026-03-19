@@ -235,6 +235,17 @@ declare -A LOCALE_UDID=(
   ["ko-KR"]="UDID_KO_KR"
 )
 
+# Configuration
+IS_NATIVE_IOS=false  # Set to true if app uses system locale
+BUILD_APP=false      # Set to true to build the app before capturing
+BUNDLE_ID="com.example.app"
+
+if [ "$BUILD_APP" = true ]; then
+  echo "Building app for simulator..."
+  # ⬇ Replace with your framework's build command
+  flutter build ios --simulator
+fi
+
 # 1. Boot all simulators and set their locales
 for LOCALE in "${!LOCALE_UDID[@]}"; do
   (
@@ -243,12 +254,20 @@ for LOCALE in "${!LOCALE_UDID[@]}"; do
     APPLE_LOCALE="${LOCALE/-/_}"    # e.g., 'ja_JP'
 
     xcrun simctl boot "$UDID" || true
-    xcrun simctl spawn "$UDID" defaults write NSGlobalDomain AppleLanguages -array "$LANG"
-    xcrun simctl spawn "$UDID" defaults write NSGlobalDomain AppleLocale -string "$APPLE_LOCALE"
     
-    # Needs a reboot to apply locale changes cleanly
-    xcrun simctl shutdown "$UDID"
-    xcrun simctl boot "$UDID"
+    if [ "$IS_NATIVE_IOS" = true ]; then
+      # Native iOS: change system locale
+      xcrun simctl spawn "$UDID" defaults write NSGlobalDomain AppleLanguages -array "$LANG"
+      xcrun simctl spawn "$UDID" defaults write NSGlobalDomain AppleLocale -string "$APPLE_LOCALE"
+      
+      # Needs a reboot to apply locale changes cleanly
+      xcrun simctl shutdown "$UDID"
+      xcrun simctl boot "$UDID"
+    else
+      # Flutter / Shared Prefs: write directly to app preferences
+      PREFS_DIR=$(xcrun simctl get_app_container "$UDID" "$BUNDLE_ID" data)/Library/Preferences
+      defaults write "$PREFS_DIR/$BUNDLE_ID" selected_locale -string "$LANG"
+    fi
 
     # Install the built app (adjust path for your framework)
     xcrun simctl install "$UDID" build/ios/iphonesimulator/Runner.app

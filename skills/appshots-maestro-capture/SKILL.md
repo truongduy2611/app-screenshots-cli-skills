@@ -194,8 +194,13 @@ set -e
 DEVICE_TYPE="com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro-Max"
 RUNTIME="com.apple.CoreSimulator.SimRuntime.iOS-18-3"
 APP_PATH="build/ios/iphonesimulator/Runner.app"
+BUNDLE_ID="com.example.app"
 FLOW_DIR=".maestro"
 OUTPUT_BASE="./screenshots/raw"
+
+# Configuration
+IS_NATIVE_IOS=false  # Set to true if app uses system locale
+BUILD_APP=false      # Set to true to build the app before capturing
 
 LOCALES="${@:-en}"
 
@@ -233,12 +238,21 @@ capture_locale() {
   # Boot and set locale
   xcrun simctl boot "$udid" 2>/dev/null || true
   sleep 2
-  xcrun simctl spawn "$udid" defaults write "Apple Global Domain" AppleLocale "$apple_locale"
-  xcrun simctl spawn "$udid" defaults write "Apple Global Domain" AppleLanguages -array "$lang"
-  xcrun simctl shutdown "$udid"
-  sleep 1
-  xcrun simctl boot "$udid"
-  sleep 5
+  
+  if [ "$IS_NATIVE_IOS" = true ]; then
+    # Native iOS: change system locale
+    xcrun simctl spawn "$udid" defaults write "Apple Global Domain" AppleLocale "$apple_locale"
+    xcrun simctl spawn "$udid" defaults write "Apple Global Domain" AppleLanguages -array "$lang"
+    xcrun simctl shutdown "$udid"
+    sleep 1
+    xcrun simctl boot "$udid"
+    sleep 5
+  else
+    # Flutter / Shared Prefs: write directly to app preferences
+    local prefs_dir=$(xcrun simctl get_app_container "$udid" "$BUNDLE_ID" data)/Library/Preferences
+    defaults write "$prefs_dir/$BUNDLE_ID" selected_locale -string "$lang"
+    # No reboot needed for app-level locale
+  fi
 
   # Install app
   xcrun simctl install "$udid" "$APP_PATH"
@@ -257,13 +271,15 @@ capture_locale() {
   xcrun simctl delete "$udid" 2>/dev/null || true
 }
 
-# Build the app first (adjust for your framework)
-# Flutter:        flutter build ios --simulator
-# Xcode (native): xcodebuild -scheme MyApp -sdk iphonesimulator -derivedDataPath build
-# React Native:   npx react-native build-ios --mode=Release --simulator
-echo "Building app for simulator..."
-# ⬇ Replace with your framework's build command
-flutter build ios --simulator
+if [ "$BUILD_APP" = true ]; then
+  # Build the app first (adjust for your framework)
+  # Flutter:        flutter build ios --simulator
+  # Xcode (native): xcodebuild -scheme MyApp -sdk iphonesimulator -derivedDataPath build
+  # React Native:   npx react-native build-ios --mode=Release --simulator
+  echo "Building app for simulator..."
+  # ⬇ Replace with your framework's build command
+  flutter build ios --simulator
+fi
 
 # Run captures (parallel for speed)
 for locale in $LOCALES; do
