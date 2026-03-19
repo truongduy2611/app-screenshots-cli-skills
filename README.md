@@ -6,14 +6,55 @@ A collection of [Agent Skills](https://github.com/skills) for the **App Screensh
 npx skills add truongduy2611/app-screenshots-cli-skills
 ```
 
+## Quick Start
+
+The fastest path to automated App Store & Google Play screenshots:
+
+1. **Prepare your app** → `appshots-accessibility-ids` (add stable accessibility identifiers for your framework)
+2. **Capture screenshots** → `appshots-maestro-capture` (write YAML flows, run across locales)
+3. **Design & export** → `appshots-design-workflow` (frames, backgrounds, text overlays)
+4. **Translate** → `appshots-translation` (AI translation with per-locale overrides)
+
 ## Available Skills
 
-### appshots-automation-pipeline
-End-to-end screenshot automation pipeline for iOS apps using asc CLI, simctl, and AXe.
+### appshots-maestro-capture ⭐ NEW
+Screenshot capture automation using **Maestro CLI** with declarative YAML flows.
 
 Use when:
+- You need to capture screenshots with **automatic waits** (no manual sleep timers).
+- You're working with any mobile framework (Flutter, SwiftUI, UIKit, Compose, React Native).
+- You need **cross-platform** capture (iOS Simulator + Android Emulator).
+- You want a single YAML flow file instead of bash scripts.
+
+Example:
+```
+Capture 10 screens of my vocabulary app across en, vi, ja locales using Maestro.
+```
+
+---
+
+### appshots-accessibility-ids ⭐ NEW
+Adding **stable accessibility identifiers** for screenshot automation across all frameworks.
+
+Use when:
+- Your app's interactive elements don't have stable accessibility identifiers yet.
+- You need a **naming convention** for identifiers (`screen_element` pattern).
+- You want to know **which elements** need identifiers for capture flows.
+- You need a **per-framework API reference** (Flutter, SwiftUI, UIKit, Compose, XML Android, React Native).
+
+Example:
+```
+Add accessibility identifiers to all tappable elements in my home screen for screenshot automation.
+```
+
+---
+
+### appshots-automation-pipeline
+End-to-end screenshot automation pipeline — tool selection, simulator management, and multi-locale capture.
+
+Use when:
+- You need to **choose between Maestro and AXe** for your capture workflow.
 - You need to boot simulators and set locales programmatically.
-- You need to navigate apps and capture raw screenshots using accessibility identifiers.
 - You want to run parallel multi-locale screenshot captures.
 
 Example:
@@ -135,15 +176,18 @@ Skills are automatically available once installed. The agent will use them when 
 Each skill contains:
 - `SKILL.md` — Instructions for the agent
 - `scripts/` — Helper scripts for automation (optional)
+- `examples/` — Sample flows and reference files (optional)
 - `references/` — Supporting documentation (optional)
 
 > **Note:** The app supports a maximum of **10 design slots** per multi-screenshot set, matching the App Store's 10-screenshot limit per display size.
 
 ## Requirements
 
-- The **App Screenshots** desktop app must be running
+- The **App Screenshots** desktop app must be running (for design/export skills)
 - The CLI auto-discovers the server port via `~/.config/app-screenshots/server.port`
 - Install the CLI: `dart pub global activate --source path packages/app_screenshots_cli`
+- **Maestro** (for capture): `curl -fsSL "https://get.maestro.mobile.dev" | bash`
+- **AXe** (fallback for capture): `brew install cameroncooke/axe/axe`
 
 ## Acknowledgements
 

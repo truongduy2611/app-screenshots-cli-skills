@@ -1,0 +1,68 @@
+# Example: Detail / Interactive Screen Capture Flow
+# Captures screens that require navigation + interaction before screenshot.
+
+appId: com.example.myapp    # Replace with your bundle ID
+
+---
+# ============================================================
+# Interactive List Item
+# ============================================================
+- launchApp
+
+- scrollUntilVisible:
+    element:
+      id: "card_featured"
+    direction: DOWN
+    timeout: 10000
+
+- tapOn:
+    id: "card_featured"
+
+- extendedWaitUntil:
+    visible:
+      id: "detail_content"
+    timeout: 5000
+
+- takeScreenshot: detail_featured
+
+# ============================================================
+# Interactive Screen with Play Button
+# ============================================================
+- launchApp
+
+- scrollUntilVisible:
+    element:
+      id: "card_activity"
+    direction: DOWN
+    timeout: 10000
+
+- tapOn:
+    id: "card_activity"
+
+# Tap a start/play button within the screen
+- tapOn:
+    id: "play_button"
+
+# Wait for content to load
+- extendedWaitUntil:
+    visible:
+      id: "activity_content"
+    timeout: 8000
+
+- takeScreenshot: activity_gameplay
+
+# ============================================================
+# Screen with Delayed Content (e.g., animations, network data)
+# ============================================================
+- launchApp
+
+- tapOn:
+    id: "card_dashboard"
+
+# Wait for animated content to settle
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_chart"
+    timeout: 10000
+
+- takeScreenshot: dashboard_loaded

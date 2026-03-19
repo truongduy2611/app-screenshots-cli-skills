@@ -1,0 +1,60 @@
+# Example: Home Screen Capture Flow
+# Captures the main screens of a typical mobile app.
+# Place in .maestro/ directory at project root.
+
+appId: com.example.myapp    # Replace with your bundle ID
+
+---
+# ============================================================
+# Home Screen
+# ============================================================
+- launchApp
+- takeScreenshot: 01_home
+
+# Scroll to show more content
+- scroll
+- takeScreenshot: 02_home_scrolled
+
+# ============================================================
+# Tab Navigation
+# ============================================================
+- tapOn:
+    id: "tab_search"
+- takeScreenshot: 03_search
+
+- tapOn:
+    id: "tab_profile"
+- takeScreenshot: 04_profile
+
+# ============================================================
+# Feature Screen (e.g., Camera / Scanner)
+# ============================================================
+- launchApp                     # Fresh start
+- tapOn:
+    id: "feature_camera"
+- takeScreenshot: 05_camera
+
+# Tap a sample item and wait for processing
+- tapOn:
+    id: "sample_item_0"
+- extendedWaitUntil:
+    visible:
+      id: "result_item_0"
+    timeout: 15000
+
+# Tap result to show detail popup
+- tapOn:
+    id: "result_item_0"
+- extendedWaitUntil:
+    visible:
+      id: "detail_popup"
+    timeout: 5000
+- takeScreenshot: 06_detail_popup
+
+# ============================================================
+# Settings
+# ============================================================
+- launchApp
+- tapOn:
+    id: "tab_settings"
+- takeScreenshot: 07_settings
